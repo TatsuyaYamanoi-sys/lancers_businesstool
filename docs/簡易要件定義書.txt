@@ -32,12 +32,12 @@ CSV形式でスクレイピング結果をダウンロード出来る.
 ダウンロードは手動(ボタンを押すこと)で行う.
 
 【画面一覧】
-トップページ ー データ取得・更新(button *以下btn)
-　　　　　　　  データ一覧(btn) ー 全件(checkbox *以下cb)
-　　　　　　　　　　　　           ー 未応募(cb)
-　　　　　　　　　　　　           ー 応募済(cb)
-　　　　　　　　　　　　           ー 受注済(cb)　　
-　　　　　　  　CSV出力(btn)
+トップページ - データ取得・更新(button *以下btn)
+　　　　　　 -  データ一覧(btn) - 全件(checkbox *以下cb)
+　　　　　　　　　　　　           - 未応募(cb)
+　　　　　　　　　　　　           - 応募済(cb)
+　　　　　　　　　　　　           - 受注済(cb)　　
+　　　　　　 -　CSV出力(btn)
 
 【テーブル】
 Projects
@@ -47,7 +47,7 @@ description str(1000)
 reward int
 url str(255)
 Applied bool
-accepting orders bool
+accepting_orders bool
 creat_at datetime
 modifired_at datetime
 
@@ -56,7 +56,7 @@ modifired_at datetime
   GUIアプリケーション(python)
 
 ・バックエンド
- python
+  python
 
 ・モジュール
   tkinter
