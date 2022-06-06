@@ -7,6 +7,8 @@ from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 import pandas as pd
 
 
@@ -58,7 +60,8 @@ class LancersScraper:
 
     def login(self):
         try:
-            if driver.current_url == self.url:
+            if self.driver.current_url == self.url:
+                print(self.driver.current_url)
                 print('during login process...')
 
                 login_button = self.driver.find_element(By.CLASS_NAME, 'css-1eti57o')
@@ -78,6 +81,7 @@ class LancersScraper:
                 else:
                     pass
             else:
+                print(str(self.driver.current_url))
                 print('already logged in.')
 
         except Exception as e:
@@ -100,19 +104,17 @@ class LancersScraper:
 
     def set_project_list(self):
         try:
-            elems = self.driver.find_elements(By.CSS_SELECTOR, 'div.list_info > div.r_area > a')
+            elems = self.driver.find_elements(By.CSS_SELECTOR, 'div.c-media__content__right > a.c-media__title')   
             for i, elem in enumerate(elems):
-                name = ''
-                project_url = ''
+                name = elem.find_element(By.CSS_SELECTOR, 'span.c-media__title-inner').text
+                # print(name)
+                project_url = elem.get_attribute('href')
+                # print(project_url)
                 project_ser = pd.Series({
-                    'name': name.text,  
+                    'name': name,  
                     'url': project_url
-                }, name=i)
-                print(project_ser)       # debug
+                })
                 self.project_df = pd.concat([self.project_df, pd.DataFrame(project_ser).T])
-
-                print(i)       # debug
-                print(elem.text)       # debug
 
         except Exception as e:
             print(e)
@@ -122,12 +124,25 @@ class LancersScraper:
         try:
             for i in range(3):
                 self.set_project_list()
+                WebDriverWait(self.driver, 15).until(EC.visibility_of_element_located((By.CLASS_NAME, 'pager__item__anchor')))
+                next_url = self.driver.find_element(By.CLASS_NAME, 'pager__item__anchor')
+                if next_url:
+                    next_url.click()
+                else:
+                    driver.quit()
+
         except Exception as e:
             print(e)
             driver.quit()
 
     def set_project_detail(self):
         pass
+
+    def set_id(self):
+        print(len(self.project_df))
+        for i in range(len(self.project_df)):
+            print(i)
+            self.project_df.iloc[i, 0] = i
 
     # @property     # attributeerrorでるので要調査. おそらくdfを@prorertyすることで起こる.
     # def project_df(self):
@@ -136,6 +151,9 @@ class LancersScraper:
 LS = LancersScraper(driver)
 LS.login()
 LS.search_projects()
+LS.set_all_project_list()
+LS.set_id()
+print(LS.project_df)       # debug
 
 sleep(3)
 driver.quit()
